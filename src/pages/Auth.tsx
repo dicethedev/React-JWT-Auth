@@ -1,8 +1,10 @@
 import {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom' 
 import {MDBInput} from "mdb-react-ui-kit"
-import { useLoginUserMutation } from '../services/authAPI'
+import { useLoginUserMutation, useRegisterUserMutation  } from '../services/authAPI'
 import { toast } from 'react-toastify'
+import { useAppDispatch } from '../app/hooks'
+import { setUser } from '../features/authSlice'
 
 const initialState = {
      firstName: "",
@@ -20,8 +22,16 @@ const Auth = () => {
      const {firstName, lastName, email, password, confirmPassword} = formValue;
 
      const [showRegister, setShowRegister] = useState(false);
+
+     //====================== I bring dispatch from the hook.tsx found app folder ===============
+
+     const dispatch = useAppDispatch(); 
+
+     //+++++++++++++++++++++++++++======================+++++++++++++++++++++++++++++++++++++++++
      
      const navigate = useNavigate();
+     
+     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      //loginUser as already being declared in authAPI.tsx and useLoginUserMutation is coming from there also
      const [
           loginUser, 
@@ -32,12 +42,25 @@ const Auth = () => {
                error: loginError
           },
      ] = useLoginUserMutation();
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+      // +++++++++++++++++++++++++++++++++++++++++++=====================
+      //RegisteUser Function
+     const [
+          registerUser, {
+               data: registerData,
+               isSuccess: isRegisterSuccess,
+               isError: isRegisterError,
+               error: registerError
+          },
+        ] = useRegisterUserMutation();
+     // ++++++++++++++++++++++++++++++++++++++++++========================
 
      const handleChange = (e: any) => {
         setFormValue({ ...formValue, [e.target.name]: e.target.value });
      };
 
-
+      // This is for Login page
      const handleLogin = async () => {
          if(email && password) {
            await loginUser({email, password });
@@ -46,15 +69,55 @@ const Auth = () => {
          }
      }
 
+     //This is for Register page
+     const handleRegister = async () => {
+     if (password !== confirmPassword) {
+          return toast.error("Password don't match")
+      }
+
+     if(firstName && lastName && password && email) {
+          await registerUser({firstName, lastName, email, password});
+      }
+
+     }
+
      //================ useEffect for declared react-toastify ========================
      useEffect(() => {
+          //This for Login function
         if(isLoginSuccess) {
            toast.success("User Login Sucessfully")
+           //setUser id from authSlice in features folder
+             dispatch(
+                  setUser({ name: loginData.result.name, token: loginData.token })
+                  );
            navigate("/dashboard")
         }
-     }, [isLoginSuccess]);
+          
+        //This id for Register function
+          if (isRegisterSuccess) {
+               toast.success("User Register Sucessfully")
+               //setUser id from authSlice in features folder
+               dispatch(
+                    setUser({ name: registerData.result.name, token: registerData.token })
+                    );
+               navigate("/dashboard")
+          }
+     }, [isLoginSuccess, isRegisterSuccess]);
     //================================================================================
 
+    // =========================== active for details that does not match the information in the database =================
+
+     useEffect(() => {
+        if(isLoginError) {
+             toast.error((loginError as any).data.message)
+        }
+
+          if (isRegisterError) {
+               toast.error((registerError as any).data.message)
+          }
+     }, [isLoginError, isRegisterError])
+
+     // ===============================================================================================================
 
      return (
          <section className="vh-100 gradient-custom">
@@ -121,7 +184,8 @@ const Auth = () => {
                                            Login
                                         </button>
                                      ): (
-                                        <button className="button btn btn-outline-light btn-lg px-5" type="button">
+                                        <button className="button btn btn-outline-light btn-lg px-5" 
+                                             type="button" onClick={() => handleRegister()}>
                                            Register
                                        </button> 
                                      )}

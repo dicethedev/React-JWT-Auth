@@ -15,11 +15,25 @@ export const authAPI = createApi({
                          body,
                     }
                }
+          }),
+          registerUser: builder.mutation({
+               query: (body: { 
+                     firstName: string,
+                     lastName: string, 
+                    email: string,   
+                    password: string
+                }) => {
+                    return {
+                         url: '/users/signup',
+                         method: "post",
+                         body,
+                    }
+               }
           })
      })
 })
 
 //useLoginUserMutation is default name that I named the hookname
-export const { useLoginUserMutation } = authAPI;
+export const { useLoginUserMutation, useRegisterUserMutation } = authAPI;
 
 //After this setup.. I went to store.tsx in app folder

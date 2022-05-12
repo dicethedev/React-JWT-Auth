@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-//the Folder is deleted from this project
-// import counterReducer from '../features/counter/counterSlice';
 import {authAPI} from '../services/authAPI';
-import { setupListeners } from '@reduxjs/toolkit/query/react'
+import { setupListeners } from '@reduxjs/toolkit/query/react';
+import authReducer from '../features/authSlice';
 
 export const store = configureStore({
   reducer: {
     // counter: counterReducer,
+    auth: authReducer,
     [authAPI.reducerPath]: authAPI.reducer
   },
   middleware: (getDefaultMiddleware) =>
