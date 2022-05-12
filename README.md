@@ -2,6 +2,22 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
 
+## Project Materials that is added
+This project is more of TypeScript (The SuperSet of JavaScript)
+Tested the API call on postman
+with the POST method of url(https://testtourapp.herokuapp.com\users/signup) &
+(https://testtourapp.herokuapp.com\users/signin)
+
+
+I install this packages
+npm install mdb-react-ui-kit --force
+
+npm install react-router-dom
+
+npm install react-toastify
+
+
+
 ## Available Scripts
 
 In the project directory, you can run:
